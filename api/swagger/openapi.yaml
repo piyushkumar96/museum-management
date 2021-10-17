@@ -1,0 +1,308 @@
+openapi: 3.0.1
+info:
+  title: Museum Management Service API's
+  description: User Management
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+  version: 1.0.0
+servers:
+  - url: 'https://localhost:4000/v1'
+  - url: 'http://localhost:4000/v1'
+tags:
+  - name: Health
+    description: Health check API's
+  - name: MuseumCRUD Operations
+    description: Museum Create, Read, Update, Delete Operations API's
+
+paths:
+  /health:
+    get:
+      description: Test that the service and all its dependencies are up.
+      tags:
+        - Health
+      operationId: getHealth
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    required:
+                      - data
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          value:
+                            type: boolean
+  /museum/properties:
+    get:
+      tags:
+        - MuseumCRUD Operations
+      description: >-
+        Get Most and Least Visited Museum for given query
+      operationId: getMostAndLeastVisitedMuseumByProperties
+      parameters:
+        - $ref: '#/components/parameters/date'
+        - $ref: '#/components/parameters/ignore'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/BaseResponse'
+                  - type: object
+                    required:
+                      - data
+                    properties:
+                      attendance:
+                        allOf:
+                        - $ref: '#/components/schemas/QueryMostAndLeastVisitedMuseumWI'
+                        - $ref: '#/components/schemas/QueryMostAndLeastVisitedMuseumWOI'
+              examples:
+                MostAndLeastVisitedMuseum:
+                  $ref: '#/components/examples/QueryMostAndLeastVisitedMuseum'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+#      security:
+#        - bearerAuth: [ ]
+
+components:
+  parameters:
+    date:
+      in: query
+      name: date
+      required: true
+      schema:
+        type: number
+    ignore:
+      in: query
+      required: false
+      name: ignore
+      schema:
+        type: string
+  schemas:
+    BaseResponse:
+      type: object
+      required:
+        - apiVersion
+      properties:
+        apiVersion:
+          type: string
+          example: '1'
+    # Response with Ignore
+    QueryMostAndLeastVisitedMuseumWI:
+      type: object
+      required:
+        - attendance
+      properties:
+        attendance:
+          type: object
+          required:
+            - month
+            - year
+            - highest
+            - lowest
+            - total
+          properties:
+            month:
+              type: string
+            year:
+              type: number
+            highest:
+              type: object
+              properties:
+                museum:
+                  type: string
+                visitors:
+                  type: number
+            lowest:
+              type: object
+              properties:
+                museum:
+                  type: string
+                visitors:
+                  type: number
+            ignored:
+              type: object
+              properties:
+                museum:
+                  type: string
+                visitors:
+                  type: number
+            total:
+              type: number
+    # Response without Ignore
+    QueryMostAndLeastVisitedMuseumWOI:
+      type: object
+      required:
+        - attendance
+      properties:
+        attendance:
+          type: object
+          required:
+            - month
+            - year
+            - highest
+            - lowest
+            - total
+          properties:
+            month:
+              type: string
+            year:
+              type: number
+            highest:
+              type: object
+              properties:
+                museum:
+                  type: string
+                visitors:
+                  type: number
+            lowest:
+              type: object
+              properties:
+                museum:
+                  type: string
+                visitors:
+                  type: number
+            total:
+              type: number
+  responses:
+    BadRequestError:
+      description: BAD REQUEST
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - apiVersion
+              - error
+            properties:
+              apiVersion:
+                type: string
+                example: '1'
+              error:
+                type: object
+                required:
+                  - code
+                  - message
+                properties:
+                  code:
+                    type: number
+                    example: 400
+                  message:
+                    type: string
+                    example: Invalid request
+                  errors:
+                    type: array
+                    example:
+                      - reason: 'ValidationError'
+                        message: 'should be number'
+                        location: ".query['meta-page-size']"
+                        locationType: 'InputValue'
+                    items:
+                      type: object
+                      properties:
+                        reason:
+                          type: string
+                          description: 'The kind of error that was thrown'
+                        message:
+                          type: string
+                          description: 'A message explaining the error'
+                        location:
+                          type: string
+                          description: >-
+                            A description of where the error took place.
+                            Refer to locationType to make sense of this value.
+                        locationType:
+                          type: string
+                          description: 'An identifier of where the error occurred.'
+
+    UnauthorizedError:
+      description: UNAUTHORIZED
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - apiVersion
+              - error
+            properties:
+              apiVersion:
+                type: string
+                example: '1'
+              error:
+                type: object
+                required:
+                  - code
+                  - message
+                properties:
+                  code:
+                    type: number
+                    example: 401
+                  message:
+                    type: string
+                    example: Expired Bearer token
+
+    NotFoundError:
+      description: NOT FOUND
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - apiVersion
+              - error
+            properties:
+              apiVersion:
+                type: string
+                example: '1'
+              error:
+                type: object
+                required:
+                  - code
+                  - message
+                properties:
+                  code:
+                    type: number
+                    example: 404
+                  message:
+                    type: string
+                    example: Resource not found
+
+  examples:
+    QueryMostAndLeastVisitedMuseum:
+      value:
+        apiVersion: '1'
+        data:
+          attendence:
+            month: 'April'
+            year: '2021'
+            highest:
+              museum: firehouse_museum
+              visitors: 6756
+            lowest:
+              museum: hellman_quon
+              visitors: 250
+            ignored:
+              museum: avila_adobe
+              visitors: 26989
+            total:  88528
+
+  securitySchemes:
+    bearerAuth:
+      description: >-
+        Authentication/Authorization will be done by User Management Service. The JWT token should be available in request to extract User details.
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
