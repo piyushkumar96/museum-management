@@ -4,3 +4,5 @@ dist/*
 log/*
 .nyc_output/*
 .env
+
+.idea/*

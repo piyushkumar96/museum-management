@@ -58,6 +58,7 @@ SKIP_HEALTH_CHECK=false
    ```bash
    $ npm run start
     ```
+5. Use APIs with Swagger Editor
 
 ### NPM Scripts
 
