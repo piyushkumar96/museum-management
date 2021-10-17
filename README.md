@@ -62,6 +62,7 @@ SKIP_HEALTH_CHECK=false
     ```
 5. Use APIs with Swagger Editor
 
+--- 
 ### NPM Scripts
 
 1. Run the linting
@@ -84,6 +85,11 @@ SKIP_HEALTH_CHECK=false
    ```bash
    $ npm run coverage
     ```
+   
+--- 
+
+### Demo video
+- [Video Link](https://youtu.be/0r2_pwr4kMw)
    
 
 
