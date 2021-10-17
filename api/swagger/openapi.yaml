@@ -82,15 +82,19 @@ components:
     date:
       in: query
       name: date
+      description: date in milliseconds
       required: true
       schema:
         type: number
+        example: 1404198000000
     ignore:
       in: query
       required: false
       name: ignore
+      description: museum name to ignore
       schema:
         type: string
+        example: avila_adobe
   schemas:
     BaseResponse:
       type: object
