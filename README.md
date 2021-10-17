@@ -3,9 +3,11 @@ Museum Management:- Managing the museum creation, deletion, querying etc.
 
 ---
 
-### Dependencies
+### Software Requirements
 
 - MongoDB
+- Typescript
+- Nodejs
 
 ---
 
